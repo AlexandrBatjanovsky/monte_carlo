@@ -1,67 +1,36 @@
 module monte_carlo
-#=======================#
 
+export init_compute_cluster
+
+using Distributed
 using Molly, CUDA, Unitful
 
-export run_simulation
+include("asyn_md.jl")
+using .Asyn_MD
 
-struct ProgressLogger
-    n_steps::Int
-    lock::ReentrantLock
-end
+function init_compute_cluster()
+    num_gpus = length(CUDA.devices())
+    tasks = Vector{Future}()
+    print("ok")
+    for (i, dev_id) in enumerate(0:num_gpus-1)
+        w = workers()[i]
 
-# 2. Выносим метод на уровень модуля
-function Molly.log_property!(logger::ProgressLogger, sys, buffers, neighbors, step_n; kwargs...)
-    if step_n % logger.n_steps == 0
-        # Полезно добавить ustrip или форматирование, чтобы не спамить лишним
-        lock(logger.lock) do
-            println("Шаг $step_n: Энергия = ", potential_energy(sys, neighbors))
+        t = @spawnat w begin
+            CUDA.device!(dev_id)
+            s, sm = Asyn_MD.setup_system()
+            Base.invokelatest() do
+                Core.eval(Main, quote
+                    global sys = $s
+                    global sim = $sm
+                    Molly.simulate!(sys, sim, 500_000)
+                end)
+            end
         end
+
+        push!(tasks, t)
     end
+
+    return tasks
 end
 
-function run_simulation()
-
-    sim_lock = ReentrantLock()
-
-    data_dir = joinpath(dirname(pathof(Molly)), "..", "data")
-    T = Float32
-
-    ff = MolecularForceField(
-        T,
-        joinpath(data_dir, "force_fields", "ff99SBildn.xml"),
-        joinpath(data_dir, "force_fields", "tip3p_standard.xml"),
-    )
-
-    sys = System(
-        joinpath(data_dir, "6mrr_equil.pdb"),
-        ff;
-        nonbonded_method=:pme,
-        loggers=(
-            progress=ProgressLogger(1000, ReentrantLock()),
-            energy=TotalEnergyLogger(1000),
-            writer=TrajectoryWriter(1000, "traj_6mrr_5ps.dcd"),
-        ),
-        array_type=CuArray, # Теперь это сработает в рантайме
-    )
-
-    minimizer = SteepestDescentMinimizer()
-    simulate!(sys, minimizer)
-
-    temp = T(298.0) * u"K"
-    random_velocities!(sys, temp)
-    simulator = Langevin(
-        dt=T(0.001) * u"ps",
-        temperature=temp,
-        friction=T(1.0) * u"ps^-1",
-        coupling=MonteCarloBarostat(T(1.0) * u"bar", temp, sys.boundary),
-    )
-
-    simulate!(sys, simulator, 20_000)
-
-    println("Simulation finished!!!")
-    return sys
-end
-
-#=======================Module monte_carlo=#
-end
+end # module
