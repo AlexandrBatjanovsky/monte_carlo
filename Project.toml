@@ -6,13 +6,17 @@ authors = ["AlexandrBatjanovsky <alexandersn@yandex.ru> and contributors"]
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
+LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
 Molly = "aa0f7f06-fcc0-5ec4-a7f3-a573f33f9c4c"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
-CUDA = "5.8.5"
+CUDA = "=5.8.5"
 Distributed = "1.11.0"
+JuliaFormatter = "1.0.62"
+LanguageServer = "4.1.0"
 Molly = "0.23.0"
 Revise = "3.13.0"
 Unitful = "1.27.0"

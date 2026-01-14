@@ -32,34 +32,3 @@ pkgs.mkShell {
     echo "Julia + CUDA environment ready"
   '';
 }
-
-#
-#
-#
-#{ pkgs ? import <nixpkgs> { 
-#    config = { 
-#      allowUnfree = true; 
-#      cudaSupport = true; 
-#    }; 
-#  } 
-#}:
-#
-#pkgs.mkShell {
-#  buildInputs = with pkgs; [
-#    julia-bin
-#    linuxPackages.nvidia_x11
-#    libGL
-#    stdenv.cc.cc.lib
-#  ];
-#
-#  shellHook = ''
-#    # Путь к драйверам NVIDIA в рантайме NixOS
-#    export LD_LIBRARY_PATH="/run/opengl-driver/lib:${pkgs.linuxPackages.nvidia_x11}/lib:${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
-#    
-#    # Рекомендуется для Julia в NixOS, чтобы она не пыталась качать свои бинарники CUDA,
-#    # которые часто не могут найти зависимости в /lib
-#    export JULIA_CUDA_USE_BINARYBUILDER=false
-#
-#    echo "NixOS + CUDA environment active"
-#  '';
-#}

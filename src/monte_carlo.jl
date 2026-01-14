@@ -2,6 +2,7 @@ module monte_carlo
 
 export init_compute_cluster
 
+
 using Distributed
 using Molly, CUDA, Unitful
 
@@ -22,7 +23,7 @@ function init_compute_cluster()
                 Core.eval(Main, quote
                     global sys = $s
                     global sim = $sm
-                    Molly.simulate!(sys, sim, 500_000)
+                    Molly.simulate!(sys, sim, 5_000_000)
                 end)
             end
         end
@@ -32,5 +33,6 @@ function init_compute_cluster()
 
     return tasks
 end
+
 
 end # module

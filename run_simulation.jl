@@ -1,4 +1,4 @@
-# run_simulation.jl (в корне проекта)
+#run_simulation.jl (в корне проекта)
 using Distributed
 using CUDA
 using Revise
@@ -16,3 +16,4 @@ end
 # Теперь запускаем симуляцию
 using monte_carlo
 # tasks = monte_carlo.init_compute_cluster()
+
