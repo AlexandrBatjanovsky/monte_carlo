@@ -9,8 +9,8 @@ addprocs(length(CUDA.devices()))
 # Затем загружаем зависимости на всех процессах
 @everywhere begin
     using Molly, CUDA, Unitful
-    include("src/asyn_md.jl")
-    # using .Asyn_MD
+    include("src/s_md.jl")
+    # using .S_MD
 end
 
 # Теперь запускаем симуляцию

@@ -1,4 +1,4 @@
-module Asyn_MD
+module S_MD
 
 
 export setup_system
