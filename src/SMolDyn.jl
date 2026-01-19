@@ -1,9 +1,11 @@
-module S_MD
+module SMolDyn
 
 
 export setup_system
 
-using CUDA, Molly, Unitful
+using ..CUDA
+using ..Molly
+using ..Unitful
 
 # struct ProgressLogger
 #     n_steps::Int
@@ -17,8 +19,6 @@ using CUDA, Molly, Unitful
 # end
 
 function setup_system()
-    #device!(dev_id) # Сначала выбираем карту!
-
     data_dir = joinpath(dirname(pathof(Molly)), "..", "data")
     T = Float32
 

@@ -1,5 +1,29 @@
 {
   "nodes": {
+    "amber-flake": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs",
+        "openff-amber-src": "openff-amber-src",
+        "openff-forcefields-src": "openff-forcefields-src",
+        "openff-interchange-src": "openff-interchange-src",
+        "openff-units-src": "openff-units-src",
+        "openff-utilities-src": "openff-utilities-src"
+      },
+      "locked": {
+        "lastModified": 1768840050,
+        "narHash": "sha256-o6qWhlSKbIsmZNGUWytee3WTdTqvZBGomJDaYgKdh6o=",
+        "ref": "refs/heads/main",
+        "rev": "ac31ccbffd2bf18973ee45f3e57f2fb657f48bbf",
+        "revCount": 5030,
+        "type": "git",
+        "url": "file:../openff-toolkit"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:../openff-toolkit"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -39,13 +63,47 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1768242861,
-        "narHash": "sha256-F4IIxa5xDHjtrmMcayM8lHctUq1oGltfBQu2+oqDWP4=",
+        "lastModified": 1768564909,
+        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1768621446,
+        "narHash": "sha256-6YwHV1cjv6arXdF/PQc365h1j+Qje3Pydk501Rm4Q+4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "1327e798cb055f96f92685df444e9a2c326ab5ed",
+        "rev": "72ac591e737060deab2b86d6952babd1f896d7c5",
         "type": "github"
       },
       "original": {
@@ -55,7 +113,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1767026758,
         "narHash": "sha256-7fsac/f7nh/VaKJ/qm3I338+wAJa/3J57cOGpXi0Sbg=",
@@ -74,15 +132,15 @@
     "nixvim": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs_2",
-        "systems": "systems_2"
+        "nixpkgs": "nixpkgs_3",
+        "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1767906546,
-        "narHash": "sha256-AoSWS8+P+7hQ/jIdv0wBjgH1MvnerdWBFXO4GV3JoQs=",
+        "lastModified": 1768795384,
+        "narHash": "sha256-gZIXLzhupxAwRMMRTFgrl669ciYiiPmnA3PwocJ+6jQ=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "7eb8f36f085b85a2aeff929aff52d0f6aa14e000",
+        "rev": "57d393deb53af1b28b14973d3e3885c3d17e7bbe",
         "type": "github"
       },
       "original": {
@@ -91,10 +149,91 @@
         "type": "github"
       }
     },
+    "openff-amber-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1763732995,
+        "narHash": "sha256-dLfmpod5NsjQvRNNjA/QvhhzoD8gGLUNOV5HnRm9YIE=",
+        "owner": "openforcefield",
+        "repo": "openff-amber-ff-ports",
+        "rev": "5ab338cb1933d3ab648784d54b15fa2f01d2e05e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openforcefield",
+        "repo": "openff-amber-ff-ports",
+        "type": "github"
+      }
+    },
+    "openff-forcefields-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768280172,
+        "narHash": "sha256-yoVp40JEWNdZlpESuhy2JhSXKSWpJ8HIeFNGZmkjziA=",
+        "owner": "openforcefield",
+        "repo": "openff-forcefields",
+        "rev": "9a3459e4e4e91654e1c58f7062f664476db7b9f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openforcefield",
+        "repo": "openff-forcefields",
+        "type": "github"
+      }
+    },
+    "openff-interchange-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768512468,
+        "narHash": "sha256-6r/NVy6fDlfMowLIMtlQJenQBLm5L5b0eeYdKdY4avI=",
+        "owner": "openforcefield",
+        "repo": "openff-interchange",
+        "rev": "b51d3d4e9e4e09d54ff353f0486755dae014b602",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openforcefield",
+        "repo": "openff-interchange",
+        "type": "github"
+      }
+    },
+    "openff-units-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767825272,
+        "narHash": "sha256-CvGpUBwm4dGuLFSLABejkIOl12kKBSvqLS1iAoeIioE=",
+        "owner": "openforcefield",
+        "repo": "openff-units",
+        "rev": "7c09762faf265c35e48d0a50ad9f2c24368dae0f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openforcefield",
+        "repo": "openff-units",
+        "type": "github"
+      }
+    },
+    "openff-utilities-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767646054,
+        "narHash": "sha256-l63Gu3UQumPiL5772fqSe+mRYe6nvc559DtZA49FTvQ=",
+        "owner": "openforcefield",
+        "repo": "openff-utilities",
+        "rev": "9a15d80686ee85112231e782b988d3abe1e38784",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openforcefield",
+        "repo": "openff-utilities",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs",
+        "amber-flake": "amber-flake",
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim"
       }
     },
@@ -114,6 +253,21 @@
       }
     },
     "systems_2": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_3": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
