@@ -11,11 +11,11 @@
         "openff-utilities-src": "openff-utilities-src"
       },
       "locked": {
-        "lastModified": 1768840050,
-        "narHash": "sha256-o6qWhlSKbIsmZNGUWytee3WTdTqvZBGomJDaYgKdh6o=",
+        "lastModified": 1768841775,
+        "narHash": "sha256-U1+JGOg4zudkwiIwC+5OXNEUAAKgOgG02GeQJTn58M4=",
         "ref": "refs/heads/main",
-        "rev": "ac31ccbffd2bf18973ee45f3e57f2fb657f48bbf",
-        "revCount": 5030,
+        "rev": "7ecd94e74b8940f2768d2eddb9e537acee3cb434",
+        "revCount": 5032,
         "type": "git",
         "url": "file:../openff-toolkit"
       },
