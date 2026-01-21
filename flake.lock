@@ -1,29 +1,5 @@
 {
   "nodes": {
-    "amber-flake": {
-      "inputs": {
-        "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs",
-        "openff-amber-src": "openff-amber-src",
-        "openff-forcefields-src": "openff-forcefields-src",
-        "openff-interchange-src": "openff-interchange-src",
-        "openff-units-src": "openff-units-src",
-        "openff-utilities-src": "openff-utilities-src"
-      },
-      "locked": {
-        "lastModified": 1768841775,
-        "narHash": "sha256-U1+JGOg4zudkwiIwC+5OXNEUAAKgOgG02GeQJTn58M4=",
-        "ref": "refs/heads/main",
-        "rev": "7ecd94e74b8940f2768d2eddb9e537acee3cb434",
-        "revCount": 5032,
-        "type": "git",
-        "url": "file:../openff-toolkit"
-      },
-      "original": {
-        "type": "git",
-        "url": "file:../openff-toolkit"
-      }
-    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -65,7 +41,7 @@
     },
     "flake-utils_2": {
       "inputs": {
-        "systems": "systems_2"
+        "systems": "systems_3"
       },
       "locked": {
         "lastModified": 1731533236,
@@ -83,22 +59,6 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1768564909,
-        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
         "lastModified": 1768621446,
         "narHash": "sha256-6YwHV1cjv6arXdF/PQc365h1j+Qje3Pydk501Rm4Q+4=",
         "owner": "nixos",
@@ -113,7 +73,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1767026758,
         "narHash": "sha256-7fsac/f7nh/VaKJ/qm3I338+wAJa/3J57cOGpXi0Sbg=",
@@ -129,11 +89,27 @@
         "type": "github"
       }
     },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1768564909,
+        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixvim": {
       "inputs": {
         "flake-parts": "flake-parts",
-        "nixpkgs": "nixpkgs_3",
-        "systems": "systems_3"
+        "nixpkgs": "nixpkgs_2",
+        "systems": "systems_2"
       },
       "locked": {
         "lastModified": 1768795384,
@@ -163,6 +139,30 @@
         "owner": "openforcefield",
         "repo": "openff-amber-ff-ports",
         "type": "github"
+      }
+    },
+    "openff-flake": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs_3",
+        "openff-amber-src": "openff-amber-src",
+        "openff-forcefields-src": "openff-forcefields-src",
+        "openff-interchange-src": "openff-interchange-src",
+        "openff-units-src": "openff-units-src",
+        "openff-utilities-src": "openff-utilities-src"
+      },
+      "locked": {
+        "lastModified": 1768850489,
+        "narHash": "sha256-gIF3uEqmBPwTv31fkQ+8n4yfODXDstepcf4k/YNZqx4=",
+        "ref": "refs/heads/main",
+        "rev": "1ceb6f2df835dc5222824825a05e435cbe44ef66",
+        "revCount": 5035,
+        "type": "git",
+        "url": "file:../openff-toolkit"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:../openff-toolkit"
       }
     },
     "openff-forcefields-src": {
@@ -231,10 +231,10 @@
     },
     "root": {
       "inputs": {
-        "amber-flake": "amber-flake",
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": "nixpkgs_2",
-        "nixvim": "nixvim"
+        "flake-utils": "flake-utils",
+        "nixpkgs": "nixpkgs",
+        "nixvim": "nixvim",
+        "openff-flake": "openff-flake"
       }
     },
     "systems": {

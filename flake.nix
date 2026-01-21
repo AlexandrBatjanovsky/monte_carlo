@@ -5,10 +5,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixvim.url = "github:nix-community/nixvim";
     flake-utils.url = "github:numtide/flake-utils";
-    amber-flake.url = "git+file:../openff-toolkit";
+    openff-flake.url = "git+file:../openff-toolkit";
   };
 
-  outputs = { self, nixpkgs, nixvim, flake-utils, amber-flake, ... }:
+  outputs = { self, nixpkgs, nixvim, flake-utils, openff-flake, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -21,24 +21,16 @@
 
         python-env = pkgs.python3.withPackages (ps: with ps; [
           # для openff-toolkit
+          openff-flake.packages.${system}.openff-toolkit-dev
+          openff-flake.packages.${system}.openff-units
+          openff-flake.packages.${system}.openff-utilities
+          openff-flake.packages.${system}.openff-interchange
+          openff-flake.packages.${system}.openff-forcefields
+          openff-flake.packages.${system}.openff-amber
 
-          rdkit 
-          numpy
-          pip
-          setuptools
-          # ВОТ ОНИ:
-          amber-flake.packages.${system}.openff-toolkit-dev
-          amber-flake.packages.${system}.openff-units
-          #amber-flake.packages.${system}.openff-utilities
-          #amber-flake.packages.${system}.openff-interchange
-          #amber-flake.packages.${system}.openff-forcefields
-          #amber-flake.packages.${system}.openff-amber
-
-          setuptools
-          wheel
           # debugpy    # Можно добавить для отладки
         ]);
-        ambertools = amber-flake.packages.${system}.ambertools;
+        ambertools = openff-flake.packages.${system}.ambertools;
 
         # Определяем библиотеки CUDA
         cuda-libs = with pkgs; [
@@ -70,15 +62,13 @@
             pkgs.xorg.libXinerama
             pkgs.xorg.libXi 
 
-
-            amber-flake.packages.${system}.openff-toolkit-dev
-            amber-flake.packages.${system}.openff-units
-            #amber-flake.packages.${system}.openff-utilities
-            #amber-flake.packages.${system}.openff-interchange
-            #amber-flake.packages.${system}.openff-forcefields
-            #amber-flake.packages.${system}.openff-amber
+            openff-flake.packages.${system}.openff-toolkit-dev
+            openff-flake.packages.${system}.openff-units
+            openff-flake.packages.${system}.openff-utilities
+            openff-flake.packages.${system}.openff-interchange
+            openff-flake.packages.${system}.openff-forcefields
+            openff-flake.packages.${system}.openff-amber
  
-            
             ambertools
             pkgs.julia-bin
             pkgs.pkg-config

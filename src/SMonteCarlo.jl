@@ -53,8 +53,9 @@ function rotatebond!(sys::System, irotatoms::AbstractVector{Int}, iaxis::Tuple{I
     return sys.coords
 end
 
-# function setupsystem()
-# end
+function setupsystem()
+    mol = smilestomolly("C=CCO")
+end
 
 end
 
