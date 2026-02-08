@@ -1,9 +1,9 @@
 module SMolDyn
 
 
-export setup_system
+export mdsystemsetup
 
-using ..CUDA
+using CUDA
 using ..Molly
 using ..Unitful
 
@@ -18,7 +18,7 @@ using ..Unitful
 #     end
 # end
 
-function setup_system()
+function mdsystemsetup()
     data_dir = joinpath(dirname(pathof(Molly)), "..", "data")
     T = Float32
 

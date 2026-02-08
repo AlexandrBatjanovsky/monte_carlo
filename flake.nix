@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixvim.url = "github:nix-community/nixvim";
     flake-utils.url = "github:numtide/flake-utils";
-    openff-flake.url = "git+file:../openff-toolkit";
+    openff-flake.url = "git+file:openff-toolkit";
   };
 
   outputs = { self, nixpkgs, nixvim, flake-utils, openff-flake, ... }:
