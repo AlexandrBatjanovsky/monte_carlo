@@ -16,7 +16,8 @@ function smilesmol(smiles)
     getopenmmenergy = pyimport("openff.interchange.drivers").get_openmm_energies
     unit = pyimport("openff.units").unit
 
-    mol = Molecule.from_smiles(smiles)
+    # mol = Molecule.from_smiles(smiles)
+    mol = Molecule.from_file("diala.sdf")
     mol = mol.canonical_order_atoms()
     # print(mol, mol.bonds)
     mol.generate_conformers(n_conformers=1)
@@ -25,12 +26,12 @@ function smilesmol(smiles)
     ff = ForceField("openff-2.1.0.offxml")
     mol.assign_partial_charges(partial_charge_method="am1bcc")
     interchange = ff.create_interchange(topology)
-    println(getopenmmenergy(interchange).total_energy.m_as(unit.kilojoule / unit.mol))
+    # println(getopenmmenergy(interchange).total_energy.m_as(unit.kilojoule / unit.mol))
     minfunc = pyimport("openff.interchange.operations.minimize.openmm").minimize_openmm
     newcoords = minfunc(interchange, tolerance=10.0 * unit.kilojoule / (unit.nanometer * unit.mole), max_iterations=0)
     # println(getopenmmenergy(interchange).total_energy.m_as(unit.kilojoule / unit.mol))
     interchange.positions = newcoords
-    println(getopenmmenergy(interchange).total_energy.m_as(unit.kilojoule / unit.mol))
+    # println(getopenmmenergy(interchange).total_energy.m_as(unit.kilojoule / unit.mol))
     # dcoords = pyconvert(Vector{SVector{3,Float32}}, mol.conformers[0].m_as(unit.nanometers))
     dcoords = pyconvert(Vector{SVector{3,Float32}}, newcoords.m_as(unit.nanometers))
     # println(dcoords)

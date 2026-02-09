@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixvim.url = "github:nix-community/nixvim";
     flake-utils.url = "github:numtide/flake-utils";
-    openff-flake.url = "git+file:openff-toolkit";
+    openff-flake.url = "path:/mnt/sda3/alexandersn/Work/moncarlo/openff-toolkit-dev";
   };
 
   outputs = { self, nixpkgs, nixvim, flake-utils, openff-flake, ... }:
@@ -21,24 +21,42 @@
 
         python-env = pkgs.python3.withPackages (ps: with ps; [
           # для openff-toolkit
-          openff-flake.packages.${system}.openff-toolkit-dev
+          openff-flake.packages.${system}.openff-toolkit
           openff-flake.packages.${system}.openff-units
           openff-flake.packages.${system}.openff-utilities
           openff-flake.packages.${system}.openff-interchange
           openff-flake.packages.${system}.openff-forcefields
-          openff-flake.packages.${system}.openff-amber
+          # openff-flake.packages.${system}.openff-amber
 
           # debugpy    # Можно добавить для отладки
         ]);
         ambertools = openff-flake.packages.${system}.ambertools;
 
         # Определяем библиотеки CUDA
-        cuda-libs = with pkgs; [
-          cudaPackages.cuda_nvcc
+        # cuda-libs = with pkgs; [
+        #   cudaPackages.cuda_nvcc
+        #   cudaPackages.cudatoolkit
+        #   linuxPackages.nvidia_x11
+        #   libGL
+        #   stdenv.cc.cc.lib
+        # ];
+
+        # Объединяем либы для LD_LIBRARY_PATH, чтобы не дублировать
+        runtime-libs = with pkgs; [
+          libGL
+          libGLU
+          freeglut
+          libxkbcommon
+          wayland
+          xorg.libX11
+          xorg.libXcursor
+          xorg.libXrandr
+          xorg.libXinerama
+          xorg.libXi
+          stdenv.cc.cc.lib
+          # Добавляем CUDA в рантайм
           cudaPackages.cudatoolkit
           linuxPackages.nvidia_x11
-          libGL
-          stdenv.cc.cc.lib
         ];
 
         # Конфигурируем Neovim специально под этот проект
@@ -51,32 +69,30 @@
           # Пакеты, доступные в shell
           buildInputs = [
             # для makie
-            pkgs.libGL
-            pkgs.libGLU
-            pkgs.freeglut
-            pkgs.libxkbcommon
-            pkgs.wayland
-            pkgs.xorg.libX11
-            pkgs.xorg.libXcursor
-            pkgs.xorg.libXrandr
-            pkgs.xorg.libXinerama
-            pkgs.xorg.libXi 
+            # pkgs.libGL
+            # pkgs.libGLU
+            # pkgs.freeglut
+            # pkgs.libxkbcommon
+            # pkgs.wayland
+            # pkgs.xorg.libX11
+            # pkgs.xorg.libXcursor
+            # pkgs.xorg.libXrandr
+            # pkgs.xorg.libXinerama
+            # pkgs.xorg.libXi 
 
-            openff-flake.packages.${system}.openff-toolkit-dev
+            openff-flake.packages.${system}.openff-toolkit
             openff-flake.packages.${system}.openff-units
             openff-flake.packages.${system}.openff-utilities
             openff-flake.packages.${system}.openff-interchange
             openff-flake.packages.${system}.openff-forcefields
-            openff-flake.packages.${system}.openff-amber
+            #openff-flake.packages.${system}.openff-amber
  
             ambertools
             pkgs.julia-bin
             pkgs.pkg-config
             python-env 
             myNixvim            
-
-            myNixvim # Наш редактор теперь часть окружения!
-          ] ++ cuda-libs;
+          ] ++ runtime-libs;
 
           shellHook = ''
             export JULIA_PYTHONCALL_EXE="${python-env}/bin/python3"
@@ -86,8 +102,8 @@
             
             # Позволяет GLFW использовать системные либы
             export JULIA_GLFW_LIBRARY="" 
-            
-            export AMBERHOME="${ambertools}"
+
+            # AmberTools
 
             # NVIDIA + OpenGL пути
             export CUDA_WERROR=0
@@ -104,14 +120,15 @@
             
             export GDK_SCALE=2
                       
-            export NIX_LD_LIBRARY_PATH="$SHARED_LIBS"
+            # export NIX_LD_LIBRARY_PATH="$SHARED_LIBS"
             export NIX_LD=$(cat ${pkgs.stdenv.cc}/nix-support/dynamic-linker)
             export LD_LIBRARY_PATH="$SHARED_LIBS:$LD_LIBRARY_PATH"
-
+            # export LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+            
             # Магия для NVIDIA + Wayland + GLX
             export __GLX_VENDOR_LIBRARY_NAME=nvidia
             
-            alias vim="nvim"
+            # alias vim="nvim"
             echo "⚡ Julia + CUDA + NixVim Flake Environment Ready (Wayland/NVIDIA fix applied)"
           '';
         };

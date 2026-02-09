@@ -26,13 +26,18 @@ function Molly.calculate_cv(cv::GridTorsionsCV, coords, atoms, boundary, velocit
     end
 end
 
+#struct SparseGridBias
+#    data::Dict{Vector{Int16},Int16}
+#    W::Float32
+#end
 struct SparseGridBias
-    data::Dict{Vector{Int16},Int16}
-    W::Float32
+    data::Dict{Vector{Int16},Float32}
+    W0::Float32      # Начальная высота холма (kJ/mol)
+    temp::Float32    # Температура системы (в Кельвинах)
+    gamma::Float32   # Bias Factor (например, 10.0)
 end
 function Molly.potential_energy(bias_fn::SparseGridBias, cv_sim; kwargs...)
-    num_hills = get(bias_fn.data, cv_sim, Int16(0))
-    return (num_hills * bias_fn.W) * u"kJ/mol"
+    return get(bias_fn.data, cv_sim, 0.0f0) * u"kJ/mol"
 end
 
 struct MetadynamicsLogger
@@ -40,24 +45,27 @@ struct MetadynamicsLogger
     bias::SparseGridBias
 end
 function Molly.log_property!(logger::MetadynamicsLogger, sys, buffers, neighbors, step_n, args...; kwargs...)
-    # function Molly.log_property!(logger::MetadynamicsLogger, sys, step_n; kwargs...)
     if step_n % logger.interval == 0
-        # 1. Ищем наш BiasPotential
-        # (Проверяем тип cv_type, чтобы не ошибиться)
         idx = findfirst(i -> i isa BiasPotential && i.cv_type isa GridTorsionsCV, sys.general_inters)
         if idx !== nothing
             bp = sys.general_inters[idx]
-            # 2. Считаем текущий CV (ячейку)
+            bias_fn = bp.bias_type # Наша SparseGridBias
+            # 1. Определяем текущую ячейку на сетке
             current_cv = Molly.calculate_cv(bp.cv_type, sys.coords, sys.atoms, sys.boundary, nothing)
-            # 3. Насыпаем "песок" (обновляем общий словарь)
-            logger.bias.data[current_cv] = get(logger.bias.data, current_cv, Int16(0)) + Int16(1)
-            # Возвращаем количество уникальных посещенных ячеек для истории
-            return length(logger.bias.data)
+            # 2. Извлекаем параметры
+            kb = 0.00831446f0 # kJ/(mol*K)
+            dT = bias_fn.temp * (bias_fn.gamma - 1.0f0)
+            # 3. Считаем текущий накопленный потенциал V(s)
+            current_V = get(bias_fn.data, current_cv, 0.0f0)
+            # 4. Вычисляем высоту нового холма
+            W_step = bias_fn.W0 * exp(-current_V / (kb * dT))
+            # 5. Кладём "слой песка" новой толщины
+            bias_fn.data[current_cv] = current_V + W_step
+            return length(bias_fn.data)
         end
     end
-    return 0 # Если шаг не кратен интервалу
+    return 0
 end
-
 
 function metrosimula(sys, rotse, temperature)
     function rotmove!(sys; rots, mangle)
@@ -102,7 +110,7 @@ function metrosimula(sys, rotse, temperature)
     end
     trialargs = Dict(
         :rots => rotse,
-        :mangle => 1.0u"rad" # 0.2 Максимальный шаг
+        :mangle => 0.2u"rad" # 0.2 Максимальный шаг
     )
 
     sim = MetropolisMonteCarlo(
@@ -115,7 +123,7 @@ end
 
 # function monsystemsetup(chargese, atypese, vdwe, coordse, torsionse; box_size=10.0u"nm")
 function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
-    aindexes, charges, atypes, vdw, coords, bonds, torsionic, bharmonics, aharmonics, rbonds = smilesmol(smilese)
+    aindexes, charges, atypes, vdwe, coords, bonds, torsionic, bharmonics, aharmonics, rbonds = smilesmol(smilese)
     natoms = length(aindexes)
 
     # 1. Массы
@@ -126,10 +134,10 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
     atoms = [
         Molly.Atom(
             index=i,
-            charge=charges[i] * u"q",
+            charge=charges[i],
             mass=const_amasses[Int(atypes[i])] * u"g/mol",
-            σ=vdw[i][1] * u"nm",
-            ϵ=vdw[i][2] * u"kJ/mol"
+            σ=vdwe[i][1] * u"nm",
+            ϵ=vdwe[i][2] * u"kJ/mol"
         ) for i in aindexes
     ]
 
@@ -150,7 +158,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
         cutoff=DistanceCutoff(4.0u"nm"),
         use_neighbors=true,
         weight_special=0.8333,
-        coulomb_const=138.9354558u"kJ * nm * mol^-1 * q^-2"
+        coulomb_const=138.9354558u"kJ * nm * mol^-1"
     )
 
     # 5. Топология
@@ -273,13 +281,42 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
         InteractionList3Atoms(ao1, ao2, ao3, aharmon)
     # println(angleharmonicsl)
 
+    # 11. мета
     cv_step = 0.1f0 # Шаг сетки в радианах
     hill_w = 1.5f0  # Высота холма в kJ/mol
+    gamma = 10.0f0
     gridcv = GridTorsionsCV(cvtorsions, cv_step, :pbc) # optim?
     shared_memory = Dict{Vector{Int16},Int}()
-    grid_bias = SparseGridBias(shared_memory, hill_w)
-
+    grid_bias = SparseGridBias(shared_memory, hill_w, Float32(ustrip(temperature)), gamma)
     metacpot = BiasPotential(gridcv, grid_bias)
+
+    # 12. неявная вода
+    # Подготовка данных для растворителя
+    num_to_element = Dict(1 => "H", 6 => "C", 7 => "N", 8 => "O", 16 => "S")
+    # Создаем массив объектов AtomData
+    atoms_data = [
+        Molly.AtomData(element=num_to_element[Int(atypes[i])])
+        for i in aindexes
+    ]
+    # Подготавливаем "чистые" данные (без Unitful.C в зарядах)
+    # Molly ImplicitSolvent в 2026-м всё еще хочет видеть заряды как Float64
+    clean_atoms = [
+        Molly.Atom(
+            index=i,
+            charge=charges[i], # БЕЗ u"q" или u"C"
+            mass=const_amasses[Int(atypes[i])] * u"g/mol",
+            σ=vdwe[i][1] * u"nm",
+            ϵ=vdwe[i][2] * u"kJ/mol"
+        ) for i in aindexes
+    ]
+    # Оборачиваем связи для GBSA
+    bonds_wrapper = (is=[Int(b[1]) for b in bonds], js=[Int(b[2]) for b in bonds])
+    # 3. Создаем растворитель (теперь он не упадет, так как T=Float64)
+    solvent = ImplicitSolventGBN2(
+        atoms,
+        atoms_data,
+        bonds_wrapper
+    )
 
     # 12. Сборка системы
     sys = System(
@@ -294,7 +331,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
             angleharmonicsl,
             torsionsl,
         ),
-        general_inters=(metacpot,),
+        general_inters=(metacpot, solvent),
         neighbor_finder=DistanceNeighborFinder(
             eligible=eligible,
             special=special,
@@ -305,7 +342,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
             metac=MetadynamicsLogger(100, grid_bias),),
         energy_units=u"kJ/mol",
         force_units=u"kJ/mol/nm",
-        k=8.314462618e-3u"kJ/mol/K"
+        k=8.314462618e-3u"kJ/mol/K",
     )
 
     return sys, metrosimula(sys, rots, temperature)

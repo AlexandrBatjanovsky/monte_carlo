@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "amber-flake": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1770637537,
+        "narHash": "sha256-zCANcBEj6mjFTy9g6jOODbwVxisV/TsAg5IHa23DefU=",
+        "path": "/mnt/sda3/alexandersn/Work/md/amber/nix",
+        "type": "path"
+      },
+      "original": {
+        "path": "/mnt/sda3/alexandersn/Work/md/amber/nix",
+        "type": "path"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -57,6 +73,24 @@
         "type": "github"
       }
     },
+    "flake-utils_3": {
+      "inputs": {
+        "systems": "systems_4"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1768773494,
@@ -91,16 +125,32 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1768564909,
-        "narHash": "sha256-Kell/SpJYVkHWMvnhqJz/8DqQg2b6PguxVWOuadbHCc=",
+        "lastModified": 1770464364,
+        "narHash": "sha256-z5NJPSBwsLf/OfD8WTmh79tlSU8XgIbwmk6qB1/TFzY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e4bae1bd10c9c57b2cf517953ab70060a828ee6f",
+        "rev": "23d72dabcb3b12469f57b37170fcbc1789bd7457",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixos-25.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1770464364,
+        "narHash": "sha256-z5NJPSBwsLf/OfD8WTmh79tlSU8XgIbwmk6qB1/TFzY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "23d72dabcb3b12469f57b37170fcbc1789bd7457",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-25.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -125,44 +175,26 @@
         "type": "github"
       }
     },
-    "openff-amber-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1763732995,
-        "narHash": "sha256-dLfmpod5NsjQvRNNjA/QvhhzoD8gGLUNOV5HnRm9YIE=",
-        "owner": "openforcefield",
-        "repo": "openff-amber-ff-ports",
-        "rev": "5ab338cb1933d3ab648784d54b15fa2f01d2e05e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "openforcefield",
-        "repo": "openff-amber-ff-ports",
-        "type": "github"
-      }
-    },
     "openff-flake": {
       "inputs": {
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": "nixpkgs_3",
-        "openff-amber-src": "openff-amber-src",
+        "amber-flake": "amber-flake",
+        "flake-utils": "flake-utils_3",
+        "nixpkgs": "nixpkgs_4",
         "openff-forcefields-src": "openff-forcefields-src",
         "openff-interchange-src": "openff-interchange-src",
+        "openff-toolkit-src": "openff-toolkit-src",
         "openff-units-src": "openff-units-src",
         "openff-utilities-src": "openff-utilities-src"
       },
       "locked": {
-        "lastModified": 1768983693,
-        "narHash": "sha256-kzjWAIM/NwwHiLsZCUqwMY5xicqF+vMd0PcuuD/XGsA=",
-        "ref": "refs/heads/main",
-        "rev": "58581691b6c5ab32a7f6c7bd12d2ebcad1a8d982",
-        "revCount": 5036,
-        "type": "git",
-        "url": "file:openff-toolkit"
+        "lastModified": 1770641396,
+        "narHash": "sha256-ijaUxqFnI9TbXuxJ/lVo5039oWQ9r3awDz0wtrv244Q=",
+        "path": "/mnt/sda3/alexandersn/Work/moncarlo/openff-toolkit-dev",
+        "type": "path"
       },
       "original": {
-        "type": "git",
-        "url": "file:openff-toolkit"
+        "path": "/mnt/sda3/alexandersn/Work/moncarlo/openff-toolkit-dev",
+        "type": "path"
       }
     },
     "openff-forcefields-src": {
@@ -184,11 +216,11 @@
     "openff-interchange-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1768512468,
-        "narHash": "sha256-6r/NVy6fDlfMowLIMtlQJenQBLm5L5b0eeYdKdY4avI=",
+        "lastModified": 1770407452,
+        "narHash": "sha256-e9fV7JJDu4VxkjHAiRf6WcWXnE57UstHFUF+o6uRHrY=",
         "owner": "openforcefield",
         "repo": "openff-interchange",
-        "rev": "b51d3d4e9e4e09d54ff353f0486755dae014b602",
+        "rev": "0228adb5d76a750147d92f0051a4a9cc029c6bb0",
         "type": "github"
       },
       "original": {
@@ -197,14 +229,30 @@
         "type": "github"
       }
     },
+    "openff-toolkit-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1768931875,
+        "narHash": "sha256-Y1xdOQcL+nZY/9Wg0cDPCsbDlLJhlXTPHlZiWB0YztI=",
+        "owner": "openforcefield",
+        "repo": "openff-toolkit",
+        "rev": "1017880c2c63b4fbff5aa43b079508d50b987dd0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "openforcefield",
+        "repo": "openff-toolkit",
+        "type": "github"
+      }
+    },
     "openff-units-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1767825272,
-        "narHash": "sha256-CvGpUBwm4dGuLFSLABejkIOl12kKBSvqLS1iAoeIioE=",
+        "lastModified": 1770062038,
+        "narHash": "sha256-v3QFG9f/3tMv7UpnCoCpe756RBzG0lTfVMi4mVdD8S8=",
         "owner": "openforcefield",
         "repo": "openff-units",
-        "rev": "7c09762faf265c35e48d0a50ad9f2c24368dae0f",
+        "rev": "6c5c625a76f0faa942da0d5a345bfe1bad869120",
         "type": "github"
       },
       "original": {
@@ -216,11 +264,11 @@
     "openff-utilities-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1767646054,
-        "narHash": "sha256-l63Gu3UQumPiL5772fqSe+mRYe6nvc559DtZA49FTvQ=",
+        "lastModified": 1769619234,
+        "narHash": "sha256-b4OwwMWG6ykRaDzenO59qIloc+WYOiHsEydMQLtbTXU=",
         "owner": "openforcefield",
         "repo": "openff-utilities",
-        "rev": "9a15d80686ee85112231e782b988d3abe1e38784",
+        "rev": "2ef33a6bfc409ca36a27f900e801643c0f28595c",
         "type": "github"
       },
       "original": {
@@ -268,6 +316,21 @@
       }
     },
     "systems_3": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_4": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",

@@ -2,7 +2,7 @@
 
 julia_version = "1.12.3"
 manifest_format = "2.0"
-project_hash = "5cd5730d084592e1632d36cd56490765bc22e2be"
+project_hash = "81601f1d5b770f4b3dea1047e544086e8c115616"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -821,7 +821,7 @@ version = "0.23.1"
     PythonCall = "6099a3de-0909-46bc-b1f4-468b9a2dfc0d"
 
 [[deps.MonteCarlo]]
-deps = ["BenchmarkTools", "CUDA", "Comonicon", "Distributed", "Graphs", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "Molly", "PythonCall", "Revise", "StaticArrays", "Unitful"]
+deps = ["BenchmarkTools", "CUDA", "Comonicon", "Distributed", "Graphs", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "Molly", "PythonCall", "Revise", "StaticArrays", "UnicodePlots", "Unitful"]
 path = "."
 uuid = "d36dbb3d-0fd2-44e3-8b1c-b03e82fd3171"
 version = "1.0.0-DEV"
