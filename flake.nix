@@ -3,9 +3,13 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    nixvim.url = "github:nix-community/nixvim";
+    nixvim.url = "github:nix-community/nixvim/nixos-25.11";
+    nixvim.inputs.nixpkgs.follows = "nixpkgs";
+
     flake-utils.url = "github:numtide/flake-utils";
+    # openff-flake.url = "path:/mnt/sda3/alexandersn/Work/moncarlo/openff-toolkit-dev";
     openff-flake.url = "path:/mnt/sda3/alexandersn/Work/moncarlo/openff-toolkit-dev";
+    # openff-flake.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nixvim, flake-utils, openff-flake, ... }:
@@ -26,20 +30,8 @@
           openff-flake.packages.${system}.openff-utilities
           openff-flake.packages.${system}.openff-interchange
           openff-flake.packages.${system}.openff-forcefields
-          # openff-flake.packages.${system}.openff-amber
-
-          # debugpy    # Можно добавить для отладки
         ]);
         ambertools = openff-flake.packages.${system}.ambertools;
-
-        # Определяем библиотеки CUDA
-        # cuda-libs = with pkgs; [
-        #   cudaPackages.cuda_nvcc
-        #   cudaPackages.cudatoolkit
-        #   linuxPackages.nvidia_x11
-        #   libGL
-        #   stdenv.cc.cc.lib
-        # ];
 
         # Объединяем либы для LD_LIBRARY_PATH, чтобы не дублировать
         runtime-libs = with pkgs; [
@@ -55,8 +47,8 @@
           xorg.libXi
           stdenv.cc.cc.lib
           # Добавляем CUDA в рантайм
-          cudaPackages.cudatoolkit
-          linuxPackages.nvidia_x11
+          # cudaPackages.cudatoolkit
+          # linuxPackages.nvidia_x11
         ];
 
         # Конфигурируем Neovim специально под этот проект

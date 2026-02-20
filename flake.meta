@@ -1,0 +1,28 @@
+[1mResolved URL:[0m  git+file:///mnt/sda3/alexandersn/Work/moncarlo/monte_carlo
+[1mDescription:[0m   Julia CUDA Monte Carlo Project with NixVim
+[1mPath:[0m          /nix/store/7dfgx6mj45x64pq9b3fw3d6ilispria7-source
+[1mRevision:[0m      c59c63cc50cdad07fa2991340c3d165f9a6e4958-dirty
+[1mLast modified:[0m 2026-02-09 20:54:50
+[1mFingerprint:[0m   b8114267fcc33026a66bfad0b1fbf68d0b560a5f6b6783211744516b180923af
+[1mInputs:[0m
+├───[1mflake-utils[0m: github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b?narHash=sha256-l0KFg5HjrsfsO/JpG%2Br7fRrqm12kzFHyUHqHCVpMMbI%3D (2024-11-13 21:27:16)
+│   └───[1msystems[0m: github:nix-systems/default/da67096a3b9bf56a91d16901293e51ba5b49a27e?narHash=sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768%3D (2023-04-09 08:27:08)
+├───[1mnixpkgs[0m: github:nixos/nixpkgs/77ef7a29d276c6d8303aece3444d61118ef71ac2?narHash=sha256-XsM7GP3jHlephymxhDE%2B/TKKO1Q16phz/vQiLBGhpF4%3D (2026-01-18 21:58:14)
+├───[1mnixvim[0m: github:nix-community/nixvim/5b138edcb2f1c3ed4b29eca3658f04f0639b98b3?narHash=sha256-YRU0IHMzXluZxr0JDfq9jtblb4DV7MIB5wj2jYMFKQc%3D (2026-01-20 11:56:21)
+│   ├───[1mflake-parts[0m: github:hercules-ci/flake-parts/a34fae9c08a15ad73f295041fec82323541400a9?narHash=sha256-XswHlK/Qtjasvhd1nOa1e8MgZ8GS//jBoTqWtrS1Giw%3D (2025-12-15 21:49:12)
+│   │   └───[1mnixpkgs-lib[0m follows input 'nixvim/nixpkgs'
+│   ├───[1mnixpkgs[0m: github:NixOS/nixpkgs/346dd96ad74dc4457a9db9de4f4f57dab2e5731d?narHash=sha256-7fsac/f7nh/VaKJ/qm3I338%2BwAJa/3J57cOGpXi0Sbg%3D (2025-12-29 16:45:58)
+│   └───[1msystems[0m: github:nix-systems/default/da67096a3b9bf56a91d16901293e51ba5b49a27e?narHash=sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768%3D (2023-04-09 08:27:08)
+└───[1mopenff-flake[0m: path:/mnt/sda3/alexandersn/Work/moncarlo/openff-toolkit-dev?lastModified=1770641396&narHash=sha256-ijaUxqFnI9TbXuxJ/lVo5039oWQ9r3awDz0wtrv244Q%3D (2026-02-09 12:49:56)
+    ├───[1mamber-flake[0m: path:/mnt/sda3/alexandersn/Work/md/amber/nix?lastModified=1770637537&narHash=sha256-zCANcBEj6mjFTy9g6jOODbwVxisV/TsAg5IHa23DefU%3D (2026-02-09 11:45:37)
+    │   ├───[1mflake-utils[0m: github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b?narHash=sha256-l0KFg5HjrsfsO/JpG%2Br7fRrqm12kzFHyUHqHCVpMMbI%3D (2024-11-13 21:27:16)
+    │   │   └───[1msystems[0m: github:nix-systems/default/da67096a3b9bf56a91d16901293e51ba5b49a27e?narHash=sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768%3D (2023-04-09 08:27:08)
+    │   └───[1mnixpkgs[0m: github:NixOS/nixpkgs/23d72dabcb3b12469f57b37170fcbc1789bd7457?narHash=sha256-z5NJPSBwsLf/OfD8WTmh79tlSU8XgIbwmk6qB1/TFzY%3D (2026-02-07 11:39:24)
+    ├───[1mflake-utils[0m: github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b?narHash=sha256-l0KFg5HjrsfsO/JpG%2Br7fRrqm12kzFHyUHqHCVpMMbI%3D (2024-11-13 21:27:16)
+    │   └───[1msystems[0m: github:nix-systems/default/da67096a3b9bf56a91d16901293e51ba5b49a27e?narHash=sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768%3D (2023-04-09 08:27:08)
+    ├───[1mnixpkgs[0m: github:NixOS/nixpkgs/23d72dabcb3b12469f57b37170fcbc1789bd7457?narHash=sha256-z5NJPSBwsLf/OfD8WTmh79tlSU8XgIbwmk6qB1/TFzY%3D (2026-02-07 11:39:24)
+    ├───[1mopenff-forcefields-src[0m: github:openforcefield/openff-forcefields/9a3459e4e4e91654e1c58f7062f664476db7b9f9?narHash=sha256-yoVp40JEWNdZlpESuhy2JhSXKSWpJ8HIeFNGZmkjziA%3D (2026-01-13 04:56:12)
+    ├───[1mopenff-interchange-src[0m: github:openforcefield/openff-interchange/0228adb5d76a750147d92f0051a4a9cc029c6bb0?narHash=sha256-e9fV7JJDu4VxkjHAiRf6WcWXnE57UstHFUF%2Bo6uRHrY%3D (2026-02-06 19:50:52)
+    ├───[1mopenff-toolkit-src[0m: github:openforcefield/openff-toolkit/1017880c2c63b4fbff5aa43b079508d50b987dd0?narHash=sha256-Y1xdOQcL%2BnZY/9Wg0cDPCsbDlLJhlXTPHlZiWB0YztI%3D (2026-01-20 17:57:55)
+    ├───[1mopenff-units-src[0m: github:openforcefield/openff-units/6c5c625a76f0faa942da0d5a345bfe1bad869120?narHash=sha256-v3QFG9f/3tMv7UpnCoCpe756RBzG0lTfVMi4mVdD8S8%3D (2026-02-02 19:53:58)
+    └───[1mopenff-utilities-src[0m: github:openforcefield/openff-utilities/2ef33a6bfc409ca36a27f900e801643c0f28595c?narHash=sha256-b4OwwMWG6ykRaDzenO59qIloc%2BWYOiHsEydMQLtbTXU%3D (2026-01-28 16:53:54)

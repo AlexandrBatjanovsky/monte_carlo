@@ -9,8 +9,11 @@ include("SMolDyn.jl")
 using .SMolDyn: mdsystemsetup
 export mdsystemsetup
 #monte-carlo
-include("SMonteCarlo.jl")
-using .SMonteCarlo: monsystemsetup
+include("CMonteCarlo.jl")
+using .CMonteCarlo: monsystemsetup
+include("DMonteCarlo.jl")
+using .DMonteCarlo: GridTorsionsCV, SparseGridBias, MetadynamicsLogger, rotmove!
+
 
 #tools
 # include("ChemTools.jl")

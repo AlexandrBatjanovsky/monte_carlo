@@ -5,19 +5,22 @@ export smilesmol
 
 using PythonCall
 using StaticArrays
-# using Graphs
 
-function smilesmol(smiles)
+function smilesmol(molenter)
 
     Molecule = pyimport("openff.toolkit").Molecule
     ForceField = pyimport("openff.toolkit").ForceField
     Topology = pyimport("openff.toolkit").Topology
     Interchange = pyimport("openff.interchange").Interchange
-    getopenmmenergy = pyimport("openff.interchange.drivers").get_openmm_energies
+    # getopenmmenergy = pyimport("openff.interchange.drivers").get_openmm_energies
     unit = pyimport("openff.units").unit
 
-    # mol = Molecule.from_smiles(smiles)
-    mol = Molecule.from_file("diala.sdf")
+    if ispath(molenter)
+        mol = Molecule.from_file(molenter)
+    else
+        mol = Molecule.from_smiles(molenter)
+    end
+
     mol = mol.canonical_order_atoms()
     # print(mol, mol.bonds)
     mol.generate_conformers(n_conformers=1)
@@ -33,6 +36,7 @@ function smilesmol(smiles)
     interchange.positions = newcoords
     # println(getopenmmenergy(interchange).total_energy.m_as(unit.kilojoule / unit.mol))
     # dcoords = pyconvert(Vector{SVector{3,Float32}}, mol.conformers[0].m_as(unit.nanometers))
+
     dcoords = pyconvert(Vector{SVector{3,Float32}}, newcoords.m_as(unit.nanometers))
     # println(dcoords)
 

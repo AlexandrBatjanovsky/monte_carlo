@@ -1,113 +1,20 @@
-module SMonteCarlo
+module CMonteCarlo
 
 
 export monsystemsetup
 
 using Molly
-using CUDA
+# using CUDA
 using Unitful
-using LinearAlgebra
 using StaticArrays
 using Graphs
 include("ChemTools.jl")
 using .ChemTools: smilesmol
+include("DMonteCarlo.jl")
+using .DMonteCarlo
 
-# cv по двугранным углам
-struct GridTorsionsCV
-    indices::Vector{NTuple{4,Int}}
-    grid_step::Float32
-    correction::Symbol
-end
-function Molly.calculate_cv(cv::GridTorsionsCV, coords, atoms, boundary, velocities; kwargs...)
-    return map(cv.indices) do idx
-        ang = torsion_angle(coords[idx[1]], coords[idx[2]], coords[idx[3]], coords[idx[4]], boundary)
-        # Сразу квантуем в Int16
-        return round(Int16, (ang + pi) / cv.grid_step)
-    end
-end
-
-#struct SparseGridBias
-#    data::Dict{Vector{Int16},Int16}
-#    W::Float32
-#end
-struct SparseGridBias
-    data::Dict{Vector{Int16},Float32}
-    W0::Float32      # Начальная высота холма (kJ/mol)
-    temp::Float32    # Температура системы (в Кельвинах)
-    gamma::Float32   # Bias Factor (например, 10.0)
-end
-function Molly.potential_energy(bias_fn::SparseGridBias, cv_sim; kwargs...)
-    return get(bias_fn.data, cv_sim, 0.0f0) * u"kJ/mol"
-end
-
-struct MetadynamicsLogger
-    interval::Int
-    bias::SparseGridBias
-end
-function Molly.log_property!(logger::MetadynamicsLogger, sys, buffers, neighbors, step_n, args...; kwargs...)
-    if step_n % logger.interval == 0
-        idx = findfirst(i -> i isa BiasPotential && i.cv_type isa GridTorsionsCV, sys.general_inters)
-        if idx !== nothing
-            bp = sys.general_inters[idx]
-            bias_fn = bp.bias_type # Наша SparseGridBias
-            # 1. Определяем текущую ячейку на сетке
-            current_cv = Molly.calculate_cv(bp.cv_type, sys.coords, sys.atoms, sys.boundary, nothing)
-            # 2. Извлекаем параметры
-            kb = 0.00831446f0 # kJ/(mol*K)
-            dT = bias_fn.temp * (bias_fn.gamma - 1.0f0)
-            # 3. Считаем текущий накопленный потенциал V(s)
-            current_V = get(bias_fn.data, current_cv, 0.0f0)
-            # 4. Вычисляем высоту нового холма
-            W_step = bias_fn.W0 * exp(-current_V / (kb * dT))
-            # 5. Кладём "слой песка" новой толщины
-            bias_fn.data[current_cv] = current_V + W_step
-            return length(bias_fn.data)
-        end
-    end
-    return 0
-end
 
 function metrosimula(sys, rotse, temperature)
-    function rotmove!(sys; rots, mangle)
-        function rotatebond!(sys::System, irotatoms::AbstractVector{Int},
-            iaxis::Tuple{Int,Int}, angle::Unitful.Quantity)
-            # промежуточные переменные: основание вектора вращения, 
-            # нормализованый вектор вращения, 
-            # коэфициенты для функции Родригеса
-
-            zr = sys.coords[iaxis[1]]
-            axis = normalize(sys.coords[iaxis[2]] - zr)
-            cosa, sina = cos(angle), sin(angle)
-            omc = 1 - cosa
-
-            # только только для смещаемых атомов
-            cv = view(sys.coords, irotatoms)
-
-            # Внутренняя функция вращения (замыкание)
-            # Принимает SVector{3, nm}, возвращает SVector{3, nm}
-            function rodrigues_rotation(r)
-                p = r - zr # Вектор относительно центра вращения
-                # Родригеса формула
-                p = p * cosa +
-                    cross(axis, p) * sina +
-                    axis * dot(axis, p) * omc
-                return p + zr
-            end
-
-            cv .= rodrigues_rotation.(cv)
-
-            return sys.coords
-        end
-
-        # rots = argse[:rots]
-        # mangle = argse[:mangle]
-        r = rand(rots)
-        angle = (rand() - 0.5) * mangle
-        rotatebond!(sys, r.irotatoms, r.axis, angle)
-
-        return nothing
-
-    end
     trialargs = Dict(
         :rots => rotse,
         :mangle => 0.2u"rad" # 0.2 Максимальный шаг
@@ -118,11 +25,11 @@ function metrosimula(sys, rotse, temperature)
         trial_moves=rotmove!,
         trial_args=trialargs,
     )
-
+    return sim
 end
 
-# function monsystemsetup(chargese, atypese, vdwe, coordse, torsionse; box_size=10.0u"nm")
-function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
+
+function monsystemsetup(smilese; singlmode=true, box_size=10.0u"nm", temperature=298.15u"K")
     aindexes, charges, atypes, vdwe, coords, bonds, torsionic, bharmonics, aharmonics, rbonds = smilesmol(smilese)
     natoms = length(aindexes)
 
@@ -131,11 +38,12 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
         1 => 1.008, 6 => 12.011, 7 => 14.007, 8 => 15.999, 16 => 32.06
     )
 
+    # заряды без единиц измерения (реализация неявной воды в моле безкулоновская)
     atoms = [
         Molly.Atom(
             index=i,
             charge=charges[i],
-            mass=const_amasses[Int(atypes[i])] * u"g/mol",
+            mass=const_amasses[Int16(atypes[i])] * u"g/mol",
             σ=vdwe[i][1] * u"nm",
             ϵ=vdwe[i][2] * u"kJ/mol"
         ) for i in aindexes
@@ -161,7 +69,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
         coulomb_const=138.9354558u"kJ * nm * mol^-1"
     )
 
-    # 5. Топология
+    # 5. Топологи
     moltopo = MolecularTopology(
         fill(1, natoms),
         [natoms],
@@ -198,7 +106,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
 
     # 7. Группы разворота и дополненая четвёрка поворота для cv
     rots = []
-    cvtorsions = NTuple{4,Int}[]
+    cvtorsions = NTuple{4,Int16}[]
     numsegments = length(connected_components(moltree))
     for tbond in rbonds
         u, v = tbond
@@ -222,10 +130,10 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
     end
 
     # 8. торсионные потенциалы
-    to1 = Int[]
-    to2 = Int[]
-    to3 = Int[]
-    to4 = Int[]
+    to1 = Int16[]
+    to2 = Int16[]
+    to3 = Int16[]
+    to4 = Int16[]
     torsions = PeriodicTorsion[]
     for t in torsionic
         push!(to1, t[:indices][1])
@@ -236,7 +144,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
         # Molly ожидает NTuple, поэтому используем (val,)
 
         tp = PeriodicTorsion(
-            periodicities=(Int(t[:period]),),
+            periodicities=(Int16(t[:period]),),
             phases=(t[:phase] * u"rad",),
             ks=(t[:k] * u"kJ/mol",),
             proper=true
@@ -250,7 +158,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
     )
 
     # 9. Гармонические потенциалы по связям
-    bo1, bo2 = Int[], Int[]
+    bo1, bo2 = Int16[], Int16[]
     bharmon = HarmonicBond[]
     for tharm in bharmonics
         push!(bo1, tharm[1][1] + 1)
@@ -264,7 +172,7 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
     # println(bondharmonicl)
 
     # 10. Гармонические потенциалы по углам 
-    ao1, ao2, ao3 = Int[], Int[], Int[]
+    ao1, ao2, ao3 = Int16[], Int16[], Int16[]
     aharmon = HarmonicAngle[]
     for ang in aharmonics
         idxs = ang[1] .+ 1
@@ -282,12 +190,15 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
     # println(angleharmonicsl)
 
     # 11. мета
-    cv_step = 0.1f0 # Шаг сетки в радианах
-    hill_w = 1.5f0  # Высота холма в kJ/mol
+    numcv = length(cvtorsions)
+    cvstep = 0.1f0 # Шаг сетки в радианах
+    hillw = 1.5f0  # Высота холма в kJ/mol
     gamma = 10.0f0
-    gridcv = GridTorsionsCV(cvtorsions, cv_step, :pbc) # optim?
-    shared_memory = Dict{Vector{Int16},Int}()
-    grid_bias = SparseGridBias(shared_memory, hill_w, Float32(ustrip(temperature)), gamma)
+    gridcv = GridTorsionsCV{numcv}(cvtorsions, cvstep, :pbc)
+    shared_memory = Dict{NTuple{numcv,Int16},Float32}()
+    grid_bias = singlmode ?
+                SinglSparseGridBias{numcv}(shared_memory, hillw, Float32(ustrip(temperature)), gamma) :
+                AsyncSparseGridBias{numcv}(shared_memory, empty(shared_memory), hillw, Float32(ustrip(temperature)), gamma)
     metacpot = BiasPotential(gridcv, grid_bias)
 
     # 12. неявная вода
@@ -295,23 +206,12 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
     num_to_element = Dict(1 => "H", 6 => "C", 7 => "N", 8 => "O", 16 => "S")
     # Создаем массив объектов AtomData
     atoms_data = [
-        Molly.AtomData(element=num_to_element[Int(atypes[i])])
+        Molly.AtomData(element=num_to_element[Int16(atypes[i])])
         for i in aindexes
     ]
-    # Подготавливаем "чистые" данные (без Unitful.C в зарядах)
-    # Molly ImplicitSolvent в 2026-м всё еще хочет видеть заряды как Float64
-    clean_atoms = [
-        Molly.Atom(
-            index=i,
-            charge=charges[i], # БЕЗ u"q" или u"C"
-            mass=const_amasses[Int(atypes[i])] * u"g/mol",
-            σ=vdwe[i][1] * u"nm",
-            ϵ=vdwe[i][2] * u"kJ/mol"
-        ) for i in aindexes
-    ]
     # Оборачиваем связи для GBSA
-    bonds_wrapper = (is=[Int(b[1]) for b in bonds], js=[Int(b[2]) for b in bonds])
-    # 3. Создаем растворитель (теперь он не упадет, так как T=Float64)
+    bonds_wrapper = (is=[Int16(b[1]) for b in bonds], js=[Int16(b[2]) for b in bonds])
+    # Создаем растворитель (теперь он не упадет, так как T=Float64)
     solvent = ImplicitSolventGBN2(
         atoms,
         atoms_data,
@@ -339,13 +239,13 @@ function monsystemsetup(smilese; box_size=10.0u"nm", temperature=298.15u"K")
             dist_cutoff=1.2 * u"nm",
         ),
         loggers=(mc=MonteCarloLogger(),
-            metac=MetadynamicsLogger(100, grid_bias),),
+            metac=MetadynamicsLogger(gridcv, 1, grid_bias),),
         energy_units=u"kJ/mol",
         force_units=u"kJ/mol/nm",
         k=8.314462618e-3u"kJ/mol/K",
     )
 
-    return sys, metrosimula(sys, rots, temperature)
+    return sys, metrosimula(sys, rots, temperature), numcv
 end
 
 
